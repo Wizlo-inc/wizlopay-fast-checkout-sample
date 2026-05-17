@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop — WizloPay Demo</title>
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+<div class="page-shell">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <a href="/" class="topbar-logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="28" height="28" rx="8" fill="#6938ef"/>
+        <path d="M7 8h4l3 8 3-8h4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M8 17h12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      WizloShop
+    </a>
+  </header>
+
+  <!-- Page content -->
+  <main class="main-content">
+    <div class="content-narrow">
+
+      <!-- Step indicator -->
+      <div class="steps">
+        <div class="step active">
+          <div class="step-dot">1</div>
+          <span>Your details</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step">
+          <div class="step-dot">2</div>
+          <span>Checkout</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step">
+          <div class="step-dot">3</div>
+          <span>Confirm</span>
+        </div>
+      </div>
+
+      <!-- Form card -->
+      <div class="card">
+        <h1 class="card-title">Tell us about yourself</h1>
+        <p class="card-subtitle">Fill in your details and choose a product to purchase.</p>
+
+        <form id="details-form" novalidate>
+
+          <!-- Name row -->
+          <div class="form-row">
+            <div class="field">
+              <label for="firstName">First name</label>
+              <input type="text" id="firstName" name="firstName" placeholder="Jane" autocomplete="given-name" />
+              <div class="field-error" id="err-firstName">Please enter your first name.</div>
+            </div>
+            <div class="field">
+              <label for="lastName">Last name</label>
+              <input type="text" id="lastName" name="lastName" placeholder="Smith" autocomplete="family-name" />
+              <div class="field-error" id="err-lastName">Please enter your last name.</div>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="field">
+            <label for="email">Email address</label>
+            <input type="email" id="email" name="email" placeholder="jane@example.com" autocomplete="email" />
+            <div class="field-error" id="err-email">Please enter a valid email address.</div>
+          </div>
+
+          <!-- Mobile -->
+          <div class="field">
+            <label for="mobile">Mobile number</label>
+            <input type="tel" id="mobile" name="mobile" placeholder="+1 555 000 0000" autocomplete="tel" />
+            <div class="field-error" id="err-mobile">Please enter your mobile number.</div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Product selection -->
+          <div class="field" style="margin-bottom: 28px;">
+            <label>Choose a product</label>
+            <div class="product-grid" id="product-grid">
+              <!-- Populated by JS -->
+              <div style="grid-column: 1/-1; text-align: center; color: var(--wz-text-tertiary); padding: 20px;">Loading products…</div>
+            </div>
+            <div class="field-error" id="err-product">Please select a product.</div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg btn-full" id="submit-btn">
+            Continue to checkout
+          </button>
+
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<div id="toast"></div>
+<script src="/js/index.js"></script>
+</body>
+</html>

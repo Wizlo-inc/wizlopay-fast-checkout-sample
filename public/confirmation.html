@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order confirmed — WizloPay Demo</title>
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+<div class="page-shell">
+
+  <header class="topbar">
+    <a href="/" class="topbar-logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="28" height="28" rx="8" fill="#6938ef"/>
+        <path d="M7 8h4l3 8 3-8h4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M8 17h12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      WizloShop
+    </a>
+  </header>
+
+  <main class="main-content">
+    <div class="content-narrow">
+
+      <!-- Step indicator -->
+      <div class="steps">
+        <div class="step done">
+          <div class="step-dot">✓</div>
+          <span>Your details</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step done">
+          <div class="step-dot">✓</div>
+          <span>Checkout</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step active">
+          <div class="step-dot">3</div>
+          <span>Confirm</span>
+        </div>
+      </div>
+
+      <!-- Success card -->
+      <div class="card">
+        <div class="success-hero">
+          <div class="success-icon">✅</div>
+          <h1 class="success-title">Payment successful!</h1>
+          <p class="success-sub" id="success-sub">Your order has been placed and is on its way.</p>
+        </div>
+
+        <!-- Order detail summary -->
+        <div class="order-summary" id="order-summary" style="display:none;">
+          <div class="order-summary-row">
+            <span>Order ID</span>
+            <span id="conf-order-id" style="font-family: monospace; font-size: 12px;">—</span>
+          </div>
+          <div class="order-summary-row">
+            <span>Product</span>
+            <span id="conf-product">—</span>
+          </div>
+          <div class="order-summary-row total">
+            <span>Amount charged</span>
+            <span id="conf-amount">—</span>
+          </div>
+        </div>
+
+        <a href="/" class="btn btn-secondary btn-md" style="margin-top: 8px;" id="shop-again-btn">
+          Shop again
+        </a>
+      </div>
+
+      <!-- Upsell section -->
+      <div class="upsell-section" id="upsell-section" style="display:none;">
+        <h2 class="upsell-heading">Complete your purchase</h2>
+        <p class="upsell-sub">Add these extras with one click — charged to your saved payment method, no re-entry needed.</p>
+
+        <div class="upsell-grid" id="upsell-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<div id="toast"></div>
+<script src="/js/confirmation.js"></script>
+</body>
+</html>
