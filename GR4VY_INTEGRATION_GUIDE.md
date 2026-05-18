@@ -1,3 +1,27 @@
+---
+title: "gr4vy Embed Integration Guide"
+description: "A complete developer reference for integrating gr4vy Embed — covering JWT tokens, billing address handling, card-on-file upsells, and common pitfalls."
+version: "1.0.0"
+date: "2026-05-17"
+authors:
+  - Wizlo Inc.
+tags:
+  - gr4vy
+  - payments
+  - embed
+  - node.js
+  - typescript
+  - card-on-file
+  - upsell
+  - ecommerce
+stack:
+  backend: "Node.js / Express / TypeScript"
+  frontend: "Plain HTML / CSS / JS"
+  sdk: "@gr4vy/sdk v1.x"
+  embed: "embed.latest.js (CDN)"
+  database: "PostgreSQL"
+---
+
 # gr4vy Embed Integration Guide
 
 A complete reference for developers implementing gr4vy Embed with a Node.js/Express backend and plain JS frontend. Every nuance below was discovered through real implementation and debugging.
