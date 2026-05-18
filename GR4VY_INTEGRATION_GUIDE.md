@@ -20,6 +20,9 @@ stack:
   sdk: "@gr4vy/sdk v1.x"
   embed: "embed.latest.js (CDN)"
   database: "PostgreSQL"
+metadata:
+  checkout: "true"
+  upsell: "true"
 ---
 
 # gr4vy Embed Integration Guide
