@@ -542,3 +542,187 @@ input.error, select.error { border-color: var(--wz-border-error); }
   font-size: 14px;
   gap: 10px;
 }
+
+/* ── Express checkout ───────────────────────────────────────── */
+.express-card { margin-bottom: 0; }
+
+.express-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.express-btn {
+  height: 48px;
+  width: 100%;
+  border-radius: var(--wz-radius-md);
+  border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.express-btn:focus-visible { outline: none; box-shadow: var(--wz-focus-ring-shadow-xs-skeuomorphic); }
+.express-btn:disabled { opacity: .6; cursor: wait; }
+
+.express-btn-paypal { background: #ffc439; }
+.express-btn-paypal:hover { background: #f2ba36; }
+
+.express-gpay { height: 48px; }
+.express-gpay > div, .express-gpay button { width: 100% !important; height: 48px !important; border-radius: var(--wz-radius-md) !important; }
+
+apple-pay-button {
+  --apple-pay-button-width: 100%;
+  --apple-pay-button-height: 48px;
+  --apple-pay-button-border-radius: 8px;
+  display: block;
+}
+
+.express-skeleton {
+  height: 48px;
+  border-radius: var(--wz-radius-md);
+  background: linear-gradient(90deg, var(--wz-color-gray-100), var(--wz-color-gray-200), var(--wz-color-gray-100));
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite linear;
+}
+
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+.or-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0;
+  color: var(--wz-text-tertiary);
+  font-size: 14px;
+}
+.or-divider::before, .or-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--wz-border-secondary);
+}
+
+/* ── Payment tabs ───────────────────────────────────────────── */
+.pay-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  background: var(--wz-color-gray-100);
+  border-radius: var(--wz-radius-lg);
+  margin-bottom: 20px;
+}
+
+.pay-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 72px;
+  padding: 10px 8px;
+  border: 1.5px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--wz-text-tertiary);
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+
+.pay-tab:hover { color: var(--wz-text-primary); }
+.pay-tab.active {
+  background: var(--wz-bg-primary);
+  color: var(--wz-fg-brand-primary);
+  border-color: var(--wz-border-brand);
+  box-shadow: var(--wz-shadow-xs);
+}
+.pay-tab:focus-visible { outline: none; box-shadow: var(--wz-focus-ring-shadow-xs-skeuomorphic); }
+
+.pay-tab-icon { width: 24px; height: 24px; }
+.pay-tab-logos { display: flex; gap: 6px; }
+.pay-tab-logos img { height: 24px; border-radius: 4px; }
+
+/* ── Card fields (Secure Fields iframes) ────────────────────── */
+.card-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--wz-border-primary);
+  border-radius: var(--wz-radius-lg);
+  overflow: hidden;
+  background: var(--wz-bg-primary);
+}
+
+.card-field { height: 52px; position: relative; }
+.card-field-full { grid-column: 1 / -1; border-bottom: 1px solid var(--wz-border-primary); }
+.card-field:last-child { border-left: 1px solid var(--wz-border-primary); }
+.card-field > div, .card-field iframe { width: 100%; height: 100%; border: 0; }
+.card-fields.invalid { border-color: var(--wz-border-error); }
+.card-field.focused { box-shadow: inset 0 0 0 2px var(--wz-border-brand); }
+
+.consent-text {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--wz-text-tertiary);
+  text-align: center;
+  margin: 14px 8px 16px;
+}
+
+/* ── BNPL list ──────────────────────────────────────────────── */
+.bnpl-intro { font-size: 14px; color: var(--wz-text-tertiary); margin-bottom: 12px; }
+.bnpl-list { display: flex; flex-direction: column; gap: 12px; }
+
+.bnpl-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  text-align: left;
+  font: inherit;
+  background: var(--wz-bg-secondary);
+  border: 1px solid var(--wz-border-primary);
+  border-radius: var(--wz-radius-lg);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.bnpl-option:hover { border-color: var(--wz-border-brand); background: var(--wz-bg-brand-primary); }
+.bnpl-option:focus-visible { outline: none; box-shadow: var(--wz-focus-ring-shadow-xs-skeuomorphic); }
+.bnpl-option:disabled { opacity: .6; cursor: wait; }
+.bnpl-option img { width: 48px; height: 32px; border-radius: 4px; flex-shrink: 0; }
+.bnpl-body { flex: 1; min-width: 0; }
+.bnpl-name { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 15px; font-weight: 600; color: var(--wz-text-primary); }
+.bnpl-pill {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--wz-text-brand-secondary);
+  border: 1px solid var(--wz-color-brand-300);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.bnpl-sub { font-size: 13px; color: var(--wz-text-tertiary); margin-top: 3px; }
+.bnpl-chevron { color: var(--wz-text-tertiary); flex-shrink: 0; }
+
+.empty-note { font-size: 14px; color: var(--wz-text-tertiary); padding: 12px 0; }
+
+/* ── Payment footer ─────────────────────────────────────────── */
+.pay-footer { border-top: 1px solid var(--wz-border-secondary); margin-top: 24px; padding-top: 20px; }
+.pay-footer-title { font-size: 14px; font-weight: 600; color: var(--wz-text-secondary); margin-bottom: 10px; }
+.logo-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.logo-row img { height: 26px; border-radius: 4px; }
+.secured-by { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--wz-text-tertiary); }
+.secured-by strong { color: var(--wz-text-secondary); font-weight: 600; }
+
+@media (max-width: 480px) {
+  .pay-tab { font-size: 13px; min-height: 64px; }
+  .express-buttons { grid-template-columns: 1fr; }
+}
+
+.paypal-wordmark { font: italic 800 20px/1 "Helvetica Neue", Arial, sans-serif; letter-spacing: -.3px; }
+.paypal-wordmark span:first-child { color: #003087; }
+.paypal-wordmark span:last-child  { color: #009cde; }
