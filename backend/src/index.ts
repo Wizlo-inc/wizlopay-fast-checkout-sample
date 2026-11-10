@@ -13,6 +13,10 @@ import { MAIN_PRODUCTS, UPSELL_PRODUCTS } from "./products";
 const app = express();
 const PORT = process.env.PORT ?? 4000;
 
+// Behind ngrok (or any HTTPS proxy): trust X-Forwarded-* so req.protocol / req.hostname
+// reflect the public https URL used for redirect URLs and wallet domain validation.
+app.set("trust proxy", true);
+
 // Raw body for webhook signature verification — must come before json()
 app.use("/api/webhooks", express.raw({ type: "application/json" }));
 
@@ -38,6 +42,11 @@ app.get("/api/config", (_req, res) => {
     upsellProducts: UPSELL_PRODUCTS,
   });
 });
+
+// Apple Pay domain verification — download the file from the gr4vy dashboard
+// (Connections → Apple Pay → Domains) into public/.well-known/.
+// express.static ignores dot-directories by default, so serve this one explicitly.
+app.use("/.well-known", express.static(path.join(__dirname, "../../public/.well-known"), { dotfiles: "allow" }));
 
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, "../../public")));

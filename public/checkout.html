@@ -44,8 +44,25 @@
       <!-- Two-column checkout grid -->
       <div class="checkout-grid">
 
-        <!-- Left: shipping address + embed -->
+        <!-- Left: express checkout, shipping address, payment -->
         <div>
+
+          <!-- Express checkout: wallets collect the shipping address themselves -->
+          <div class="card express-card" id="express-card">
+            <h2 class="card-title">Express checkout</h2>
+            <p class="card-subtitle">Pay in one tap. Your shipping address comes from your wallet.</p>
+            <div class="express-buttons" id="express-buttons">
+              <div class="express-skeleton"></div>
+              <div class="express-skeleton"></div>
+            </div>
+          </div>
+
+          <div class="or-divider" id="or-divider"><span>or pay another way</span></div>
+
+          <div id="payment-error" class="alert alert-error" style="display:none; margin-bottom: 20px;">
+            <span>⚠️</span>
+            <span id="payment-error-text"></span>
+          </div>
 
           <!-- Shipping address -->
           <div class="card" style="margin-bottom: 20px;">
@@ -94,26 +111,50 @@
             </form>
           </div>
 
-          <!-- Payment -->
+          <!-- Payment: Cards / Buy Now, Pay Later -->
           <div class="card">
-            <h2 class="card-title" style="margin-bottom: 4px;">Payment</h2>
-            <p class="card-subtitle">Secured by gr4vy · SSL encrypted</p>
+            <h2 class="card-title" style="margin-bottom: 16px;">Payment</h2>
 
-            <!-- gr4vy Embed mount point -->
-            <div id="gr4vy-embed">
-              <div class="embed-placeholder" id="embed-placeholder">
-                <span class="spinner" style="border-color: rgba(105,56,239,.3); border-top-color: var(--wz-fg-brand-primary);"></span>
-                Loading payment form…
-              </div>
+            <div class="pay-tabs" role="tablist">
+              <button type="button" class="pay-tab active" role="tab" id="tab-card" aria-selected="true" aria-controls="panel-card" data-panel="panel-card">
+                <span class="pay-tab-label">Cards</span>
+                <svg class="pay-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                  <rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h3"/>
+                </svg>
+              </button>
+              <button type="button" class="pay-tab" role="tab" id="tab-bnpl" aria-selected="false" aria-controls="panel-bnpl" data-panel="panel-bnpl">
+                <span class="pay-tab-label">Buy Now, Pay Later</span>
+                <span class="pay-tab-logos" id="bnpl-tab-logos"></span>
+              </button>
             </div>
 
-            <button id="pay-btn" class="btn btn-primary btn-lg btn-full" style="margin-top: 20px; display: none;" onclick="submitPayment()">
-              Pay now
-            </button>
+            <!-- Cards panel (gr4vy Secure Fields) -->
+            <div class="pay-panel" id="panel-card" role="tabpanel" aria-labelledby="tab-card">
+              <div class="card-fields" id="card-fields">
+                <div class="card-field card-field-full"><div id="cc-number"></div></div>
+                <div class="card-field"><div id="cc-expiry"></div></div>
+                <div class="card-field"><div id="cc-cvv"></div></div>
+              </div>
+              <div class="field-error" id="err-card">Please check your card details.</div>
+              <p class="consent-text">By providing your card details, you authorize WizloShop to charge your card for this order.</p>
+              <button id="pay-btn" type="button" class="btn btn-primary btn-lg btn-full" disabled>Pay</button>
+            </div>
 
-            <div id="embed-error" class="alert alert-error" style="display:none; margin-top: 16px;">
-              <span>⚠️</span>
-              <span id="embed-error-text">Could not load the payment form. Please refresh and try again.</span>
+            <!-- BNPL panel (redirect methods) -->
+            <div class="pay-panel" id="panel-bnpl" role="tabpanel" aria-labelledby="tab-bnpl" hidden>
+              <p class="bnpl-intro">Finance your purchase and pay over time. Select an option to check eligibility.</p>
+              <div class="bnpl-list" id="bnpl-list"></div>
+            </div>
+
+            <div class="pay-footer">
+              <div class="pay-footer-title">All major credit cards accepted</div>
+              <div class="logo-row" id="card-logos"></div>
+              <div class="pay-footer-title" id="bnpl-footer-title">Buy Now, Pay Later</div>
+              <div class="logo-row" id="bnpl-logos"></div>
+              <div class="secured-by">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M17 10V8A5 5 0 0 0 7 8v2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1Zm-8 0V8a3 3 0 0 1 6 0v2H9Z"/></svg>
+                Secured by <strong>WizloPay</strong>
+              </div>
             </div>
           </div>
 
@@ -152,7 +193,7 @@
             </div>
 
             <div style="font-size: 12px; color: var(--wz-text-tertiary); text-align: center; margin-top: 16px;">
-              🔒 Payments processed securely by gr4vy
+              🔒 Payments processed securely by WizloPay
             </div>
           </div>
 
