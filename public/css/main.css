@@ -663,7 +663,13 @@ apple-pay-button {
 .card-field:last-child { border-left: 1px solid var(--wz-border-primary); }
 .card-field > div, .card-field iframe { width: 100%; height: 100%; border: 0; }
 .card-fields.invalid { border-color: var(--wz-border-error); }
-.card-field.focused { box-shadow: inset 0 0 0 2px var(--wz-border-brand); }
+/* Secure Fields sets data attributes on each field container */
+.card-field:has([data-secure-fields-focused]) { box-shadow: inset 0 0 0 2px var(--wz-border-brand); }
+.card-field.invalid { background: var(--wz-bg-error-primary); }
+.card-field.invalid:has([data-secure-fields-focused]) { box-shadow: inset 0 0 0 2px var(--wz-border-error); }
+
+.card-errors { margin-top: 8px; }
+.card-errors.show { display: flex; flex-direction: column; gap: 2px; }
 
 .consent-text {
   font-size: 13px;

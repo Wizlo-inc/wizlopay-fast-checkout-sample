@@ -14,7 +14,11 @@ const state = {
   config:       null,
   checkout:     null,   // response of /api/payment/init
   secureFields: null,
-  fieldsValid:  { number: false, expiryDate: false, securityCode: false },
+  fields:       null,   // Secure Fields field instances
+  cardForm:     null,   // latest FORM_CHANGE field state
+  codeLabel:    'CVV',
+  showAllCardErrors: false,
+  vaultError:   null,
   busy:         false,
 };
 
@@ -104,54 +108,133 @@ function setupCardForm() {
     .catch(() => showPaymentError('Could not load the card form. Please refresh and try again.'));
 }
 
+// Secure Fields UX: auto advance, scheme icons, masking, inline validation.
+// See https://docs.gr4vy.com/guides/payments/secure-fields/ux-options
+const CARD_FIELDS = [
+  { key: 'number',       selector: '#cc-number' },
+  { key: 'expiryDate',   selector: '#cc-expiry' },
+  { key: 'securityCode', selector: '#cc-cvv' },
+];
+
 function mountSecureFields() {
   /* global SecureFields */
   const { gr4vyId, environment } = state.config;
   const sf = new SecureFields({ gr4vyId, environment, sessionId: state.checkout.sessionId });
   state.secureFields = sf;
 
-  const styles = {
+  // Styles applied inside each secure iframe (only an allow-listed set of CSS properties works).
+  const base = {
     fontSize: '16px',
     color: '#181d27',
+    caretColor: '#6938ef',
     padding: '0 16px',
     fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
     '::placeholder': { color: '#717680' },
   };
 
-  const fields = [
-    ['number',       '#cc-number', sf.addCardNumberField('#cc-number',  { placeholder: '1234 5678 9012 3456', styles })],
-    ['expiryDate',   '#cc-expiry', sf.addExpiryDateField('#cc-expiry',  { placeholder: 'MM / YY', styles })],
-    ['securityCode', '#cc-cvv',    sf.addSecurityCodeField('#cc-cvv',   { placeholder: 'CVV', styles })],
-  ];
+  state.fields = {
+    number: sf.addCardNumberField('#cc-number', {
+      placeholder: '1234 5678 9012 3456',
+      // Room on the right for up to 2 scheme icons (48px each + 4px gap).
+      styles: { ...base, padding: '0 112px 0 16px' },
+      showSchemeIcons: { scheme: true, additionalSchemes: true },
+      maskInput: { showLastFour: true },     // •••• •••• •••• 1111 once the field loses focus
+    }),
+    expiryDate: sf.addExpiryDateField('#cc-expiry', {
+      placeholder: 'MM / YY',
+      styles: base,
+    }),
+    securityCode: sf.addSecurityCodeField('#cc-cvv', {
+      placeholder: 'CVV',
+      styles: base,
+      maskInput: true,
+    }),
+  };
 
-  fields.forEach(([key, selector, field]) => {
-    const wrapper = document.querySelector(selector).closest('.card-field');
-    field.addEventListener('focus', () => wrapper?.classList.add('focused'));
-    field.addEventListener('blur',  () => wrapper?.classList.remove('focused'));
-    field.addEventListener('input', (data) => {
-      state.fieldsValid[key] = Boolean(data?.valid);
-      refreshPayButton();
-    });
+  // Jump number → expiry → CVV as each field becomes complete and valid.
+  sf.setAutoAdvance({ enabled: true });
+
+  // The number field reports the scheme's code label (CVV, CVC, CID) as it is typed.
+  state.fields.number.addEventListener('input', (data) => {
+    if (data?.codeLabel) state.codeLabel = data.codeLabel;
+  });
+
+  // Aggregated validation for every field on each change.
+  sf.addEventListener(SecureFields.Events.FORM_CHANGE, ({ fields }) => {
+    state.cardForm = fields;
+    renderCardErrors();
   });
 
   sf.addEventListener(SecureFields.Events.CARD_VAULT_SUCCESS, chargeCard);
-  sf.addEventListener(SecureFields.Events.CARD_VAULT_FAILURE, () => {
+  sf.addEventListener(SecureFields.Events.CARD_VAULT_FAILURE, ({ message } = {}) => {
     setBusy(false);
-    document.getElementById('card-fields').classList.add('invalid');
-    document.getElementById('err-card').classList.add('show');
+    state.vaultError = message || 'We could not verify your card details. Please check them and try again.';
+    renderCardErrors();
   });
+
+  // Opening the Cards tab puts the cursor in the card number.
+  document.getElementById('tab-card').addEventListener('click', () => state.fields.number.focus?.());
 }
 
-function refreshPayButton() {
-  const allValid = Object.values(state.fieldsValid).every(Boolean);
-  document.getElementById('pay-btn').disabled = !allValid || state.busy;
-  if (allValid) {
-    document.getElementById('card-fields').classList.remove('invalid');
-    document.getElementById('err-card').classList.remove('show');
+/** Error message for one field, or null when it is fine (or not yet worth flagging). */
+function cardFieldError(key, f = { valid: false, empty: true, touched: false }, force) {
+  // FORM_CHANGE only starts after the first keystroke, so an unknown field is an empty one.
+  if (f.valid) return null;
+  // Only flag a field once the buyer has left it, or when they try to pay.
+  if (!force && !f.touched) return null;
+  const code = state.codeLabel || 'CVV';
+  switch (key) {
+    case 'number':
+      if (f.empty) return 'Enter your card number.';
+      return f.complete ? 'This card number is not valid.' : 'Your card number is incomplete.';
+    case 'expiryDate':
+      if (f.empty) return 'Enter the expiry date.';
+      if (f.expired) return 'This card has expired.';
+      return f.complete ? 'This expiry date is not valid.' : 'Enter the expiry date as MM / YY.';
+    case 'securityCode':
+      if (f.empty) return `Enter the ${code}.`;
+      return `Your ${code} is incomplete.`;
+    default:
+      return null;
   }
 }
 
+function renderCardErrors() {
+  const fields = state.cardForm ?? {};
+  const messages = [];
+
+  CARD_FIELDS.forEach(({ key, selector }) => {
+    const msg = cardFieldError(key, fields[key], state.showAllCardErrors);
+    document.querySelector(selector).closest('.card-field').classList.toggle('invalid', Boolean(msg));
+    if (msg) messages.push(msg);
+  });
+  if (state.vaultError) messages.push(state.vaultError);
+
+  const box = document.getElementById('err-card');
+  box.innerHTML = messages.map((m) => `<span>${m}</span>`).join('');
+  box.classList.toggle('show', messages.length > 0);
+  document.getElementById('card-fields').classList.toggle('invalid', messages.length > 0);
+}
+
+function isCardComplete() {
+  const f = state.cardForm;
+  return Boolean(f?.number?.valid && f?.expiryDate?.valid && f?.securityCode?.valid);
+}
+
+function refreshPayButton() {
+  document.getElementById('pay-btn').disabled = state.busy;
+}
+
 function submitCard() {
+  state.vaultError = null;
+  if (!isCardComplete()) {
+    // Show every problem at once and send the cursor to the first one.
+    state.showAllCardErrors = true;
+    renderCardErrors();
+    const first = CARD_FIELDS.find(({ key }) => !state.cardForm?.[key]?.valid);
+    state.fields?.[first?.key ?? 'number']?.focus?.();
+    return;
+  }
   if (!validateShipping()) {
     showToast('Please complete your shipping address first.');
     document.getElementById('addressLine1').focus();

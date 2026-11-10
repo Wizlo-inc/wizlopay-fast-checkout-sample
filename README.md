@@ -29,7 +29,7 @@ for the order are shown, so Flow rules and connection setup in the gr4vy dashboa
 
 | Method | Integration | Shipping address |
 |---|---|---|
-| Card | [Secure Fields](https://docs.gr4vy.com/guides/payments/secure-fields/quick-start/overview) vaults the card into a checkout session; the server creates the transaction (`store: true`, hosted 3DS via `redirect_url`) | Shipping form |
+| Card | [Secure Fields](https://docs.gr4vy.com/guides/payments/secure-fields/quick-start/overview) (auto advance, scheme icons, masking, inline validation) vaults the card into a checkout session; the server creates the transaction (`store: true`, hosted 3DS via `redirect_url`) | Shipping form |
 | Affirm, Klarna, PayPal Pay Later, Sezzle | Server creates a redirect transaction → buyer approves at the provider → `/api/payment/return` | Shipping form (required up front for eligibility checks) |
 | PayPal | Redirect transaction; buyer picks their address on PayPal | Imported by gr4vy from PayPal (see setup below) |
 | Apple Pay | [Apple Pay JS](https://docs.gr4vy.com/guides/features/apple-pay/web-without-sdk) with gr4vy merchant validation | `requiredShippingContactFields` in the Apple Pay sheet |
@@ -40,6 +40,24 @@ shipping details, and copied into the shipping form so the buyer sees what was c
 
 Card payments store the card on the gr4vy buyer, which the confirmation page's one-click upsells
 charge as `card_on_file`.
+
+### Card form
+
+The Cards tab uses Secure Fields' [UX options](https://docs.gr4vy.com/guides/payments/secure-fields/ux-options)
+plus the app's own validation:
+
+- **Auto advance:** focus moves from card number to expiry to CVV as each field becomes complete and valid.
+- **Scheme icons:** the detected card brand (and co-badged brands) shows inside the number field.
+- **Masking:** when a field loses focus, the number is masked to its last four digits and the CVV is hidden.
+- **Inline validation:** each field is checked after the buyer leaves it, with specific messages:
+  "Your card number is incomplete.", "This card has expired.", "Enter the CID." for Amex, and so on.
+- **Validate on Pay:** clicking Pay on an incomplete form shows every error and moves the cursor to
+  the first invalid field. The button stays enabled.
+- **Accessible errors:** messages are announced through an `aria-live` region, and focused and invalid
+  fields are styled from Secure Fields' `data-secure-fields-*` attributes.
+
+[GR4VY_INTEGRATION_GUIDE.md](GR4VY_INTEGRATION_GUIDE.md) §16–§17 has the full option list, the field-state
+rules and the message table.
 
 ## Requirements
 
@@ -148,4 +166,5 @@ public/
 schema.sql           Database schema
 ```
 
-`GR4VY_INTEGRATION_GUIDE.md` documents the earlier gr4vy Embed integration and its gotchas.
+[GR4VY_INTEGRATION_GUIDE.md](GR4VY_INTEGRATION_GUIDE.md) is the detailed reference. Part 2 covers this
+Secure Fields + direct API integration; Part 1 covers the earlier gr4vy Embed integration and its gotchas.
